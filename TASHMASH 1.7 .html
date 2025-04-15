@@ -1,0 +1,783 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מחשבון זכאות לתשמ"ש</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>מחשבון זכאות לתשמ"ש</h1>
+        <div class="info-box">
+            מחשבון זה מסייע בבדיקת זכאות ראשונית לתשלום לתשמ"ש לפי חישובים מקורבים. לבדיקת זכאות מדויקת, יש לפנות למשרד הת"ש.
+        </div>
+
+        <!-- עמוד פתיחה -->
+        <div id="start-page" class="page active">
+            <h2>איזה תשמ"ש אתה רוצה לבדוק?</h2>
+            <button id="worker-tashmash"><i class="fas fa-briefcase"></i> תשמ"ש עובדת (שאינה אם לילד)</button>
+            <button id="pregnancy-14-tashmash"><i class="fas fa-baby"></i> תשמ"ש הריון (משבוע 14)</button>
+            <button id="pregnancy-32-tashmash"><i class="fas fa-baby-carriage"></i> תשמ"ש הריון (משבוע 32)</button>
+            <button id="parent-tashmash"><i class="fas fa-child"></i> תשמ"ש אם לילד / אב לילד</button>
+            <button id="student-30-tashmash"><i class="fas fa-graduation-cap"></i> תשמ"ש סטודנטית (30 ש"ש+)</button>
+            <button id="student-29-tashmash"><i class="fas fa-book"></i> תשמ"ש סטודנטית (עד 29 ש"ש)</button>
+            <button id="benefits-tashmash"><i class="fas fa-wallet"></i> תשמ"ש עם קצבאות</button>
+        </div>
+
+        <!-- עמוד הכנסה -->
+        <div id="income-page" class="page">
+            <h2>חישוב הכנסה ממוצעת</h2>
+            <p>בחר איך לחשב את ההכנסה החודשית שלך:</p>
+            <div class="radio-group">
+                <input type="radio" name="income-type" id="salary-slips" value="slips" checked> <label for="salary-slips">הזנת שלושה תלושי שכר</label>
+                <input type="radio" name="income-type" id="manual-net" value="manual"> <label for="manual-net">הזנת ממוצע נטו ישירות</label>
+            </div>
+            <form id="income-form">
+                <div id="slips-input" class="input-section">
+                    <div class="salary-slip">
+                        <h3>תלוש שכר #1</h3>
+                        <label>סכום ברוטו (בש"ח): <input type="number" id="gross1" min="0"></label>
+                        <label>ניכויי חובה <span class="tooltip">(מס הכנסה, ביטוח לאומי, בריאות)<span class="tooltip-text">לא לנכות מענקים, הבראה או תוספות חד-פעמיות</span></span>: 
+                            <input type="number" id="deductions1" min="0">
+                        </label>
+                        <label>הכנסות חד-פעמיות <span class="tooltip">(מענקים, דמי הבראה, תוספות)<span class="tooltip-text">למשל: מענק שנתי, דמי הבראה, בונוס חד-פעמי</span></span>: 
+                            <input type="number" id="oneoff1" min="0" value="0">
+                        </label>
+                    </div>
+                    <div class="salary-slip">
+                        <h3>תלוש שכר #2</h3>
+                        <label>סכום ברוטו (בש"ח): <input type="number" id="gross2" min="0"></label>
+                        <label>ניכויי חובה (בש"ח): <input type="number" id="deductions2" min="0"></label>
+                        <label>הכנסות חד-פעמיות (בש"ח): <input type="number" id="oneoff2" min="0" value="0"></label>
+                    </div>
+                    <div class="salary-slip">
+                        <h3>תלוש שכר #3</h3>
+                        <label>סכום ברוטו (בש"ח): <input type="number" id="gross3" min="0"></label>
+                        <label>ניכויי חובה (בש"ח): <input type="number" id="deductions3" min="0"></label>
+                        <label>הכנסות חד-פעמיות (בש"ח): <input type="number" id="oneoff3" min="0" value="0"></label>
+                    </div>
+                </div>
+                <div id="manual-input" class="input-section" style="display: none;">
+                    <label>ממוצע חודשי לאחר ניכויי חובה והכנסות חד-פעמיות (בש"ח): <input type="number" id="manual-net-average" min="0"></label>
+                </div>
+                <button type="submit" id="calculate-income"><i class="fas fa-calculator"></i> חשב הכנסה</button>
+                <button type="button" class="back-button" id="back-to-start-from-income"><i class="fas fa-arrow-right"></i> חזרה לבחירה</button>
+            </form>
+            <div id="income-results" style="display: none;">
+                <h3>תוצאות חישוב הכנסה</h3>
+            </div>
+        </div>
+
+        <!-- עמוד קצבאות -->
+        <div id="benefits-page" class="page">
+            <h2>חישוב הכנסה מקצבאות</h2>
+            <form id="benefits-form">
+                <label>סוג הקצבה:</label>
+                <div class="radio-group">
+                    <input type="radio" name="benefit-type" id="birth-benefit" value="birth"> <label for="birth-benefit">קצבת לידה</label>
+                    <input type="radio" name="benefit-type" id="unemployment-benefit" value="unemployment"> <label for="unemployment-benefit">קצבת אבטלה</label>
+                    <input type="radio" name="benefit-type" id="disability-benefit" value="disability"> <label for="disability-benefit">קצבת נכות</label>
+                </div>
+                <div id="benefit-details">
+                    <label>סכום הקצבה החודשי (בש"ח): <input type="number" id="benefit-amount" min="0"></label>
+                    <div id="disability-percentage" style="display: none;">
+                        <label>אחוזי נכות (%): <input type="number" id="disability-rate" min="0" max="100"></label>
+                    </div>
+                    <div id="unemployment-attendance" style="display: none;">
+                        <label>התייצבת 12 פעמים בחודש? 
+                            <input type="radio" name="attendance" value="yes"> כן
+                            <input type="radio" name="attendance" value="no" checked> לא
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" id="calculate-benefits"><i class="fas fa-calculator"></i> חשב הכנסה</button>
+                <button type="button" class="back-button" id="back-to-start-from-benefits"><i class="fas fa-arrow-right"></i> חזרה לבחירה</button>
+            </form>
+            <div id="benefits-results" style="display: none;">
+                <h3>תוצאות חישוב קצבאות</h3>
+            </div>
+        </div>
+
+        <!-- עמוד שאלות נוספות -->
+        <div id="additional-questions-page" class="page">
+            <h2>שאלות נוספות המשפיעות על הזכאות</h2>
+            <form id="additional-form">
+                <label><i class="fas fa-piggy-bank"></i> סכום כולל בעו"ש ובחסכונות (בש"ח): 
+                    <input type="number" id="savings" min="0" value="0">
+                </label>
+                <label><i class="fas fa-car"></i> האם בבעלות המשפחה רכב?</label>
+                <div class="radio-group">
+                    <input type="radio" name="car" value="yes" id="has-car-yes"> <label for="has-car-yes">כן</label>
+                    <input type="radio" name="car" value="no" id="has-car-no" checked> <label for="has-car-no">לא</label>
+                </div>
+                <div id="car-value" style="display: none;">
+                    <label>שווי הרכב לפי מחירון לוי יצחק (בש"ח): 
+                        <input type="number" id="car-worth" min="0" value="0">
+                    </label>
+                </div>
+                <button type="submit" id="calculate-final"><i class="fas fa-check"></i> חשב זכאות סופית</button>
+                <button type="button" class="back-button" id="back-to-income"><i class="fas fa-arrow-right"></i> חזרה לחישוב הכנסה</button>
+            </form>
+        </div>
+
+        <!-- עמוד תוצאות סופיות -->
+        <div id="final-results-page" class="page">
+            <h2>תוצאות זכאות לתשמ"ש</h2>
+            <div id="final-results"></div>
+            <div class="info-box">
+                תוצאה זו הינה להערכה בלבד. הזכאות הסופית נקבעת על ידי משרד הת"ש בהתאם לנתונים המלאים.
+            </div>
+            <button id="reset-app"><i class="fas fa-redo"></i> חישוב חדש</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html><style>body {
+    font-family: Arial, sans-serif;
+    direction: rtl;
+    background-color: #FFFDD0; /* שמנת */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 800px;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    width: 80%;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.page {
+    display: none;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.page.active {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+h1 {
+    color: #808000; /* ירוק זית */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #666633; /* גוון כהה של ירוק זית */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h3 {
+    color: #808000;
+    margin-bottom: 15px;
+}
+
+p {
+    color: #555;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+button {
+    background-color: #808000; /* ירוק זית */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px auto;
+    font-size: 16px;
+    display: block;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #666633;
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+.back-button {
+    background-color: #607D8B;
+}
+
+.back-button:hover {
+    background-color: #455A64;
+}
+
+.salary-slip {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #FFFDD0; /* שמנת */
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+
+.input-section {
+    margin: 20px 0;
+}
+
+label {
+    display: block;
+    margin: 15px 0;
+    color: #333;
+    font-weight: bold;
+}
+
+input[type="number"] {
+    padding: 8px;
+    width: 100%;
+    border: 1px solid #808000;
+    border-radius: 5px;
+    margin: 5px 0 15px 0;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+input[type="number"]:focus {
+    border-color: #666633;
+    outline: none;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.radio-group label {
+    font-weight: normal;
+    display: inline;
+    margin-right: 10px;
+}
+
+#income-results, #benefits-results, #final-results {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #FFFDD0;
+    border-radius: 5px;
+    border: 1px solid #808000;
+    animation: fadeIn 0.5s ease;
+}
+
+#income-results p, #benefits-results p, #final-results p {
+    margin-bottom: 8px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+i {
+    margin-left: 5px;
+}
+
+.info-box {
+    background-color: #e7f3fe;
+    border-left: 5px solid #2196F3;
+    padding: 10px;
+    margin: 15px 0;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    border-bottom: 1px dotted #000;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.eligible {
+    background-color: #dff0d8;
+    color: #3c763d;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.not-eligible {
+    background-color: #f2dede;
+    color: #a94442;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.partially-eligible {
+    background-color: #fcf8e3;
+    color: #8a6d3b;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+}</style><script>document.addEventListener('DOMContentLoaded', () => {
+    let tashmashType = '';
+    let incomeData = {};
+
+    const TASHMASH_CEILINGS = {
+        'parent': 6246,          // אם לילד / אב לילד
+        'pregnancy-14': 4997,    // הריון משבוע 14
+        'pregnancy-32': 6246,    // הריון משבוע 32
+        'student-30': 4685,      // סטודנטית 30 ש"ש+
+        'student-29': 3123,      // סטודנטית עד 29 ש"ש
+        'worker': 4997           // עובדת (שאינה אם לילד)
+    };
+    const CAR_MAX_VALUE = 44611;
+    const MINIMUM_WAGE = 5880;
+
+    // אלמנטים
+    const workerTashmashBtn = document.getElementById('worker-tashmash');
+    const pregnancy14TashmashBtn = document.getElementById('pregnancy-14-tashmash');
+    const pregnancy32TashmashBtn = document.getElementById('pregnancy-32-tashmash');
+    const parentTashmashBtn = document.getElementById('parent-tashmash');
+    const student30TashmashBtn = document.getElementById('student-30-tashmash');
+    const student29TashmashBtn = document.getElementById('student-29-tashmash');
+    const benefitsTashmashBtn = document.getElementById('benefits-tashmash');
+    const incomeForm = document.getElementById('income-form');
+    const benefitsForm = document.getElementById('benefits-form');
+    const additionalForm = document.getElementById('additional-form');
+    const backToStartFromIncome = document.getElementById('back-to-start-from-income');
+    const backToStartFromBenefits = document.getElementById('back-to-start-from-benefits');
+    const backToIncome = document.getElementById('back-to-income');
+    const resetAppBtn = document.getElementById('reset-app');
+    const incomeResults = document.getElementById('income-results');
+    const benefitsResults = document.getElementById('benefits-results');
+    const finalResults = document.getElementById('final-results');
+    const salarySlipsRadio = document.getElementById('salary-slips');
+    const manualNetRadio = document.getElementById('manual-net');
+    const slipsInput = document.getElementById('slips-input');
+    const manualInput = document.getElementById('manual-input');
+    const hasCarYes = document.getElementById('has-car-yes');
+    const hasCarNo = document.getElementById('has-car-no');
+    const carValueDiv = document.getElementById('car-value');
+    const birthBenefitRadio = document.getElementById('birth-benefit');
+    const unemploymentBenefitRadio = document.getElementById('unemployment-benefit');
+    const disabilityBenefitRadio = document.getElementById('disability-benefit');
+    const disabilityPercentage = document.getElementById('disability-percentage');
+    const unemploymentAttendance = document.getElementById('unemployment-attendance');
+
+    // פונקציה למעבר בין עמודים
+    function showPage(pageId) {
+        const currentPage = document.querySelector('.page.active');
+        if (currentPage) {
+            currentPage.classList.remove('active');
+            setTimeout(() => {
+                document.getElementById(pageId).classList.add('active');
+            }, 500);
+        } else {
+            document.getElementById(pageId).classList.add('active');
+        }
+    }
+
+    // בחירת סוג תשמ"ש
+    workerTashmashBtn.addEventListener('click', () => {
+        tashmashType = 'worker';
+        showPage('income-page');
+    });
+
+    pregnancy14TashmashBtn.addEventListener('click', () => {
+        tashmashType = 'pregnancy-14';
+        showPage('income-page');
+    });
+
+    pregnancy32TashmashBtn.addEventListener('click', () => {
+        tashmashType = 'pregnancy-32';
+        showPage('income-page');
+    });
+
+    parentTashmashBtn.addEventListener('click', () => {
+        tashmashType = 'parent';
+        showPage('income-page');
+    });
+
+    student30TashmashBtn.addEventListener('click', () => {
+        tashmashType = 'student-30';
+        showPage('income-page');
+    });
+
+    student29TashmashBtn.addEventListener('click', () => {
+        tashmashType = 'student-29';
+        showPage('income-page');
+    });
+
+    benefitsTashmashBtn.addEventListener('click', () => {
+        tashmashType = 'benefits';
+        showPage('benefits-page');
+    });
+
+    // החלפת תצוגת קלט הכנסה
+    salarySlipsRadio.addEventListener('change', () => {
+        slipsInput.style.display = 'block';
+        manualInput.style.display = 'none';
+    });
+
+    manualNetRadio.addEventListener('change', () => {
+        slipsInput.style.display = 'none';
+        manualInput.style.display = 'block';
+    });
+
+    // חישוב הכנסה מעבודה
+    incomeForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let monthlyAverage, tashmashBase, difference;
+        const ceiling = TASHMASH_CEILINGS[tashmashType];
+
+        if (salarySlipsRadio.checked) {
+            const gross1 = parseFloat(document.getElementById('gross1').value) || 0;
+            const deductions1 = parseFloat(document.getElementById('deductions1').value) || 0;
+            const oneoff1 = parseFloat(document.getElementById('oneoff1').value) || 0;
+            const gross2 = parseFloat(document.getElementById('gross2').value) || 0;
+            const deductions2 = parseFloat(document.getElementById('deductions2').value) || 0;
+            const oneoff2 = parseFloat(document.getElementById('oneoff2').value) || 0;
+            const gross3 = parseFloat(document.getElementById('gross3').value) || 0;
+            const deductions3 = parseFloat(document.getElementById('deductions3').value) || 0;
+            const oneoff3 = parseFloat(document.getElementById('oneoff3').value) || 0;
+
+            if (!gross1 || !deductions1 || !gross2 || !deductions2 || !gross3 || !deductions3) {
+                alert('יש למלא את כל השדות של התלושים!');
+                return;
+            }
+
+            const net1 = gross1 - deductions1 - oneoff1;
+            const net2 = gross2 - deductions2 - oneoff2;
+            const net3 = gross3 - deductions3 - oneoff3;
+            monthlyAverage = (net1 + net2 + net3) / 3;
+
+            let results = `
+                <p>סכום ברוטו תלוש #1: ${gross1.toFixed(2)} ש"ח</p>
+                <p>ניכויי חובה תלוש #1: ${deductions1.toFixed(2)} ש"ח</p>
+                <p>הכנסות חד-פעמיות תלוש #1: ${oneoff1.toFixed(2)} ש"ח</p>
+                <p>סכום נטו תלוש #1: ${net1.toFixed(2)} ש"ח</p>
+                <p>סכום ברוטו תלוש #2: ${gross2.toFixed(2)} ש"ח</p>
+                <p>ניכויי חובה תלוש #2: ${deductions2.toFixed(2)} sh"ח</p>
+                <p>הכנסות חד-פעמיות תלוש #2: ${oneoff2.toFixed(2)} ש"ח</p>
+                <p>סכום נטו תלוש #2: ${net2.toFixed(2)} ש"ח</p>
+                <p>סכום ברוטו תלוש #3: ${gross3.toFixed(2)} ש"ח</p>
+                <p>ניכויי חובה תלוש #3: ${deductions3.toFixed(2)} ש"ח</p>
+                <p>הכנסות חד-פעמיות תלוש #3: ${oneoff3.toFixed(2)} ש"ח</p>
+                <p>סכום נטו תלוש #3: ${net3.toFixed(2)} ש"ח</p>
+                <p>ממוצע חודשי נטו: ${monthlyAverage.toFixed(2)} ש"ח</p>
+            `;
+
+            if (tashmashType === 'parent' || tashmashType === 'pregnancy-32') {
+                // מבחן הכנסה לאם לילד או הריון משבוע 32
+                if (monthlyAverage < 6246) {
+                    difference = 6246; // 100%
+                } else if (monthlyAverage <= 8000) {
+                    difference = 4122; // 66%
+                } else if (monthlyAverage <= 10000) {
+                    difference = 3123; // 50%
+                } else if (monthlyAverage <= 11760) {
+                    difference = 2061; // 33%
+                } else {
+                    difference = 0; // אין זכאות
+                }
+                tashmashBase = monthlyAverage;
+                results += `
+                    <p>הכנסה חודשית ממוצעת: ${monthlyAverage.toFixed(2)} ש"ח</p>
+                    <p>תקרת תשמ"ש: ${ceiling.toFixed(2)} ש"ח</p>
+                    <p>זכאות לתשמ"ש: ${difference.toFixed(2)} ש"ח</p>
+                `;
+            } else {
+                // מבחן הכנסה רגיל
+                const adjustedNet = monthlyAverage - 484;
+                tashmashBase = adjustedNet * 0.7;
+                difference = ceiling - tashmashBase;
+                if (difference < 0) difference = 0;
+
+                results += `
+                    <p>ניכוי נקודות זיכוי: 484 ש"ח</p>
+                    <p>סכום נטו לאחר ניכוי זיכוי: ${adjustedNet.toFixed(2)} ש"ח</p>
+                    <p>סכום לחישוב תשמ"ש (אחרי כפל ב-0.7): ${tashmashBase.toFixed(2)} ש"ח</p>
+                    <p>תקרת תשמ"ש: ${ceiling.toFixed(2)} ש"ח</p>
+                    <p>הפרש מהתקרה: ${difference.toFixed(2)} ש"ח</p>
+                `;
+            }
+
+            incomeData = { monthlyAverage, tashmashBase, difference };
+
+            if (tashmashType === 'worker' && monthlyAverage < MINIMUM_WAGE) {
+                results += '<p class="not-eligible">ההכנסה שלך נמוכה משכר מינימום (5,880 ש"ח) ולא ממצה כושר השתכרות.</p>';
+            } else if (tashmashType === 'worker' && monthlyAverage > 6246) {
+                results += '<p class="not-eligible">ההכנסה שלך מעל 6,246 ש"ח, אין זכאות לתשמ"ש עובדת.</p>';
+                difference = 0;
+            } else {
+                results += '<button id="continue-to-additional"><i class="fas fa-arrow-left"></i> המשך לשאלות נוספות</button>';
+            }
+
+            incomeResults.innerHTML = results;
+            incomeResults.style.display = 'block';
+        } else {
+            monthlyAverage = parseFloat(document.getElementById('manual-net-average').value) || 0;
+            if (!monthlyAverage) {
+                alert('יש להזין ממוצע נטו תקין!');
+                return;
+            }
+
+            let results;
+            if (tashmashType === 'parent' || tashmashType === 'pregnancy-32') {
+                if (monthlyAverage < 6246) {
+                    difference = 6246;
+                } else if (monthlyAverage <= 8000) {
+                    difference = 4122;
+                } else if (monthlyAverage <= 10000) {
+                    difference = 3123;
+                } else if (monthlyAverage <= 11760) {
+                    difference = 2061;
+                } else {
+                    difference = 0;
+                }
+                tashmashBase = monthlyAverage;
+                results = `
+                    <p>ממוצע חודשי שהוזן: ${monthlyAverage.toFixed(2)} ש"ח</p>
+                    <p>תקרת תשמ"ש: ${ceiling.toFixed(2)} ש"ח</p>
+                    <p>זכאות לתשמ"ש: ${difference.toFixed(2)} ש"ח</p>
+                `;
+            } else {
+                const adjustedNet = monthlyAverage - 484;
+                tashmashBase = adjustedNet * 0.7;
+                difference = ceiling - tashmashBase;
+                if (difference < 0) difference = 0;
+
+                results = `
+                    <p>ממוצע חודשי שהוזן: ${monthlyAverage.toFixed(2)} ש"ח</p>
+                    <p>ניכוי נקודות זיכוי: 484 ש"ח</p>
+                    <p>סכום נטו לאחר ניכוי זיכוי: ${adjustedNet.toFixed(2)} ש"ח</p>
+                    <p>סכום לחישוב תשמ"ש (אחרי כפל ב-0.7): ${tashmashBase.toFixed(2)} ש"ח</p>
+                    <p>תקרת תשמ"ש: ${ceiling.toFixed(2)} ש"ח</p>
+                    <p>הפרש מהתקרה: ${difference.toFixed(2)} ש"ח</p>
+                `;
+            }
+
+            incomeData = { monthlyAverage, tashmashBase, difference };
+
+            if (tashmashType === 'worker' && monthlyAverage < MINIMUM_WAGE) {
+                results += '<p class="not-eligible">ההכנסה שלך נמוכה משכר מינימום (5,880 ש"ח) ולא ממצה כושר השתכרות.</p>';
+            } else if (tashmashType === 'worker' && monthlyAverage > 6246) {
+                results += '<p class="not-eligible">ההכנסה שלך מעל 6,246 ש"ח, אין זכאות לתשמ"ש עובדת.</p>';
+                difference = 0;
+            } else {
+                results += '<button id="continue-to-additional"><i class="fas fa-arrow-left"></i> המשך לשאלות נוספות</button>';
+            }
+
+            incomeResults.innerHTML = results;
+            incomeResults.style.display = 'block';
+        }
+
+        setTimeout(() => {
+            const continueBtn = document.getElementById('continue-to-additional');
+            if (continueBtn) {
+                continueBtn.addEventListener('click', () => showPage('additional-questions-page'));
+            }
+        }, 0);
+    });
+
+    // חישוב הכנסה מקצבאות
+    birthBenefitRadio.addEventListener('change', () => {
+        disabilityPercentage.style.display = 'none';
+        unemploymentAttendance.style.display = 'none';
+    });
+
+    unemploymentBenefitRadio.addEventListener('change', () => {
+        disabilityPercentage.style.display = 'none';
+        unemploymentAttendance.style.display = 'block';
+    });
+
+    disabilityBenefitRadio.addEventListener('change', () => {
+        disabilityPercentage.style.display = 'block';
+        unemploymentAttendance.style.display = 'none';
+    });
+
+    benefitsForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const benefitAmount = parseFloat(document.getElementById('benefit-amount').value) || 0;
+        const benefitType = document.querySelector('input[name="benefit-type"]:checked')?.value;
+
+        if (!benefitType || !benefitAmount) {
+            alert('יש לבחור סוג קצבה ולהזין סכום תקין!');
+            return;
+        }
+
+        let tashmashBase = benefitAmount;
+        let difference = TASHMASH_CEILINGS['worker'] - tashmashBase; // תקרה ברירת מחדל לעובדת
+        let results = `<p>סכום הקצבה החודשי: ${benefitAmount.toFixed(2)} ש"ח</p>`;
+
+        if (benefitType === 'unemployment') {
+            const attended = document.querySelector('input[name="attendance"]:checked').value === 'yes';
+            if (!attended) {
+                results += '<p class="not-eligible">לא התייצבת 12 פעמים בחודש, ולכן הקצבה לא נחשבת כמיצוי.</p>';
+                benefitsResults.innerHTML = results;
+                benefitsResults.style.display = 'block';
+                return;
+            }
+        } else if (benefitType === 'disability') {
+            const disabilityRate = parseFloat(document.getElementById('disability-rate').value) || 0;
+            if (disabilityRate < 65) {
+                results += '<p class="not-eligible">אחוזי נכות מתחת ל-65% לא מזכים בתשמ"ש מלא.</p>';
+                benefitsResults.innerHTML = results;
+                benefitsResults.style.display = 'block';
+                return;
+            }
+            results += `<p>אחוזי נכות: ${disabilityRate}%</p>`;
+        }
+
+        if (difference < 0) difference = 0;
+
+        incomeData = { monthlyAverage: benefitAmount, tashmashBase, difference };
+        results += `
+            <p>סכום לחישוב תשמ"ש: ${tashmashBase.toFixed(2)} ש"ח</p>
+            <p>תקרת תשמ"ש: ${TASHMASH_CEILINGS['worker'].toFixed(2)} ש"ח</p>
+            <p>הפרש מהתקרה: ${difference.toFixed(2)} ש"ח</p>
+            <button id="continue-to-additional"><i class="fas fa-arrow-left"></i> המשך לשאלות נוספות</button>
+        `;
+
+        benefitsResults.innerHTML = results;
+        benefitsResults.style.display = 'block';
+
+        setTimeout(() => {
+            document.getElementById('continue-to-additional').addEventListener('click', () => {
+                showPage('additional-questions-page');
+            });
+        }, 0);
+    });
+
+    // טיפול בשאלת הרכב
+    hasCarYes.addEventListener('change', () => {
+        carValueDiv.style.display = 'block';
+    });
+
+    hasCarNo.addEventListener('change', () => {
+        carValueDiv.style.display = 'none';
+        document.getElementById('car-worth').value = '0';
+    });
+
+    // חישוב זכאות סופית
+    additionalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const savings = parseFloat(document.getElementById('savings').value) || 0;
+        const hasCar = document.getElementById('has-car-yes').checked;
+        const carWorth = hasCar ? parseFloat(document.getElementById('car-worth').value) || 0 : 0;
+
+        if (isNaN(savings) || (hasCar && isNaN(carWorth))) {
+            alert('אנא מלא את כל השדות עם מספרים תקינים!');
+            return;
+        }
+
+        let finalTashmashAmount = incomeData.difference;
+        let totalIncome = incomeData.tashmashBase;
+        const ceiling = TASHMASH_CEILINGS[tashmashType] || TASHMASH_CEILINGS['worker'];
+        let results = `
+            <p>סכום בעו"ש ובחסכונות: ${savings.toFixed(2)} ש"ח</p>
+        `;
+
+        if (savings > 44000) {
+            const extraSavings = savings - 44000;
+            const extraIncome = Math.floor(extraSavings / 150);
+            totalIncome += extraIncome;
+            finalTashmashAmount -= extraIncome;
+            results += `<p>הכנסה נוספת מחסכונות (כל 150 ש"ח מעל 44,000 = 1 ש"ח): ${extraIncome.toFixed(2)} ש"ח</p>`;
+        }
+
+        if (hasCar) {
+            results += `<p>שווי הרכב: ${carWorth.toFixed(2)} ש"ח</p>`;
+            if (carWorth > CAR_MAX_VALUE) {
+                finalTashmashAmount = 0;
+                results += `<p class="not-eligible">אין זכאות לתשמ"ש עקב שווי רכב מעל ${CAR_MAX_VALUE} ש"ח.</p>`;
+            }
+        }
+
+        results += `<p>סה"כ הכנסה לחישוב: ${totalIncome.toFixed(2)} ש"ח</p>`;
+
+        if (tashmashType === 'worker' && incomeData.monthlyAverage < MINIMUM_WAGE) {
+            results += '<p class="not-eligible">ההכנסה שלך נמוכה משכר מינימום (5,880 ש"ח) ולא ממצה כושר השתכרות.</p>';
+            finalTashmashAmount = 0;
+        } else if (tashmashType === 'worker' && incomeData.monthlyAverage > 6246) {
+            results += '<p class="not-eligible">ההכנסה שלך מעל 6,246 ש"ח, אין זכאות לתשמ"ש עובדת.</p>';
+            finalTashmashAmount = 0;
+        } else if (finalTashmashAmount <= 0) {
+            results += '<p class="not-eligible">לצערנו, אין זכאות לתשמ"ש לפי הנתונים שהזנת.</p>';
+        } else if (finalTashmashAmount < 100) {
+            results += `<p class="partially-eligible">זכאותך לתשמ"ש נמוכה מסף מינימלי - ${finalTashmashAmount.toFixed(2)} ש"ח.</p>`;
+        } else {
+            finalTashmashAmount = Math.min(finalTashmashAmount, ceiling);
+            results += `<p class="eligible">זכאותך המשוערת לתשמ"ש: ${finalTashmashAmount.toFixed(2)} ש"ח בחודש.</p>`;
+        }
+
+        finalResults.innerHTML = results;
+        showPage('final-results-page');
+    });
+
+    // כפתורי חזרה ואיפוס
+    backToStartFromIncome.addEventListener('click', () => {
+        showPage('start-page');
+        incomeResults.style.display = 'none';
+    });
+
+    backToStartFromBenefits.addEventListener('click', () => {
+        showPage('start-page');
+        benefitsResults.style.display = 'none';
+    });
+
+    backToIncome.addEventListener('click', () => {
+        showPage(tashmashType === 'benefits' ? 'benefits-page' : 'income-page');
+    });
+
+    resetAppBtn.addEventListener('click', () => {
+        tashmashType = '';
+        incomeData = {};
+        document.querySelectorAll('input').forEach(input => input.value = '');
+        document.getElementById('has-car-no').checked = true;
+        document.getElementById('salary-slips').checked = true;
+        carValueDiv.style.display = 'none';
+        slipsInput.style.display = 'block';
+        manualInput.style.display = 'none';
+        incomeResults.style.display = 'none';
+        benefitsResults.style.display = 'none';
+        showPage('start-page');
+    });
+});</script>
